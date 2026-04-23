@@ -40,16 +40,25 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "$env:USERPROFILE\.claude\pl
 
 The installer copies plugin source files to the global Claude Code locations (`~/.claude/output-styles`, `~/.claude/commands`, `~/.claude/hooks`). It uses mtime checks and skips files that are already up-to-date — safe to re-run any time you edit a plugin source file.
 
-After install, edit `~/.claude/settings.json` once to wire the new hooks under `hooks.UserPromptSubmit`. Status line is set under `statusLine.command`; it's already there if you've installed before.
+After install, edit `~/.claude/settings.json` once to wire the new hooks **and** the status line.
 
-**Hook entries to add to `hooks.UserPromptSubmit`:**
+**Status line** — add (or replace) under the top-level `statusLine` key:
+
+```json
+"statusLine": {
+  "type": "command",
+  "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"%USERPROFILE%\\.claude\\plugins\\save-tokens\\scripts\\statusline.ps1\""
+}
+```
+
+**Hooks** — add both entries under `hooks.UserPromptSubmit`:
 
 ```
 powershell -NoProfile -ExecutionPolicy Bypass -File "%USERPROFILE%\.claude\hooks\compact-suggester.ps1"
 powershell -NoProfile -ExecutionPolicy Bypass -File "%USERPROFILE%\.claude\hooks\model-suggester.ps1"
 ```
 
-**Then restart Claude Code.** Output styles and hooks load at session start; edits do not hot-reload mid-session.
+**Then restart Claude Code.** Output styles, hooks, and the status line load at session start; edits do not hot-reload mid-session.
 
 ## Edit-and-redeploy flow
 
